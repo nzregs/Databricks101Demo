@@ -82,7 +82,7 @@ val cdrDF = sqlContext.read.schema(cdrSchema).json("/mnt/towerdata/2018/08/12/23
 
 // MAGIC %md
 // MAGIC #### Display the data in the Dataframe
-// MAGIC Note - the dataframe load didn't happen until now... spark is 'lazy'
+// MAGIC Note - the dataframe load didn't happen until now... spark is 'lazy' - one of the things that makes it fast :-)
 
 // COMMAND ----------
 
@@ -117,9 +117,93 @@ biggerDF.count()
 
 // COMMAND ----------
 
+import org.apache.spark.sql.functions._
+
 val newDF = biggerDF
-  .select("towername", "uri")
-  .agg(sum(cdrDF("bytes"))
-  .filter("towercity = 'Auckland'")
+  .select("towername", "towercity","bytes", "uri", "eventdate")
   .filter("billingType = 'data'")
-  .groupby("uri", "towername")
+  .filter("eventdate between '2018-08-20' and '2018-08-21'")
+  .groupBy("uri", "towername", "towercity")
+  .agg(sum("bytes"))
+  
+
+// COMMAND ----------
+
+display(newDF)
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC ####Switch to using SQL
+// MAGIC 
+// MAGIC Either __present existing dataframe as a SQL table__ 
+
+// COMMAND ----------
+
+cdrDF.createOrReplaceTempView("smallcdrdata")
+
+// COMMAND ----------
+
+// MAGIC %sql
+// MAGIC SELECT
+// MAGIC   towername, towercity, sum(bytes)
+// MAGIC from
+// MAGIC   smallcdrdata
+// MAGIC group by
+// MAGIC   towername, towercity
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC ####Switch to SQL
+// MAGIC or __load json data directly into SQL table__
+
+// COMMAND ----------
+
+// MAGIC %sql
+// MAGIC CREATE TEMPORARY TABLE sqlcdrdata
+// MAGIC   USING json
+// MAGIC   OPTIONS (path "/mnt/towerdata/2018/08/12/23/0_b7bc7ed1b47b4302bdc8ec77515ab7a4_1.json", mode "FAILFAST")
+
+// COMMAND ----------
+
+// MAGIC %sql
+// MAGIC SELECT *
+// MAGIC FROM sqlcdrdata
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC ####Or use python
+
+// COMMAND ----------
+
+// MAGIC %python
+// MAGIC pythonDF = spark.read.json("/mnt/towerdata/2018/08/12/23/0_b7bc7ed1b47b4302bdc8ec77515ab7a4_1.json")
+// MAGIC display(pythonDF)
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC ####R is supported too
+
+// COMMAND ----------
+
+// MAGIC %r
+// MAGIC 
+// MAGIC require(SparkR)
+// MAGIC 
+// MAGIC rDF <- sql("SELECT * FROM smallcdrdata")
+
+// COMMAND ----------
+
+// MAGIC %r
+// MAGIC print(count(rDF))
+
+// COMMAND ----------
+
+// MAGIC %md
+// MAGIC #### Later on....
+// MAGIC 
+// MAGIC #####Structured Streaming with Regan
+// MAGIC #####Machine Learning with Chimene
