@@ -1,6 +1,8 @@
 // Databricks notebook source
 // MAGIC %md
 // MAGIC #### List directory in Azure Blob Storage (publically accessible)
+// MAGIC 
+// MAGIC This is some text _emphasixed_
 
 // COMMAND ----------
 
@@ -136,11 +138,11 @@ display(newDF)
 // MAGIC %md
 // MAGIC ####Switch to using SQL
 // MAGIC 
-// MAGIC Either __present existing dataframe as a SQL table__ 
+// MAGIC Either __present existing dataframe read in via scala as a SQL table__ 
 
 // COMMAND ----------
 
-cdrDF.createOrReplaceTempView("smallcdrdata")
+// MAGIC %scala cdrDF.createOrReplaceTempView("smallcdrdata")
 
 // COMMAND ----------
 
@@ -161,15 +163,11 @@ cdrDF.createOrReplaceTempView("smallcdrdata")
 // COMMAND ----------
 
 // MAGIC %sql
+// MAGIC DROP TABLE IF EXISTS sqlcdrdata; 
 // MAGIC CREATE TEMPORARY TABLE sqlcdrdata
 // MAGIC   USING json
-// MAGIC   OPTIONS (path "/mnt/towerdata/2018/08/12/23/0_b7bc7ed1b47b4302bdc8ec77515ab7a4_1.json", mode "FAILFAST")
-
-// COMMAND ----------
-
-// MAGIC %sql
-// MAGIC SELECT *
-// MAGIC FROM sqlcdrdata
+// MAGIC   OPTIONS (path "/mnt/towerdata/2018/08/12/23/0_b7bc7ed1b47b4302bdc8ec77515ab7a4_1.json", mode "FAILFAST");
+// MAGIC SELECT * FROM sqlcdrdata;
 
 // COMMAND ----------
 
@@ -194,10 +192,6 @@ cdrDF.createOrReplaceTempView("smallcdrdata")
 // MAGIC require(SparkR)
 // MAGIC 
 // MAGIC rDF <- sql("SELECT * FROM smallcdrdata")
-
-// COMMAND ----------
-
-// MAGIC %r
 // MAGIC print(count(rDF))
 
 // COMMAND ----------
