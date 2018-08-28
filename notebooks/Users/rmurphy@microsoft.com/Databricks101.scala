@@ -1,8 +1,6 @@
 // Databricks notebook source
 // MAGIC %md
 // MAGIC #### List directory in Azure Blob Storage (publically accessible)
-// MAGIC 
-// MAGIC This is some text _emphasixed_
 
 // COMMAND ----------
 
