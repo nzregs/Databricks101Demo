@@ -18,7 +18,7 @@
 // COMMAND ----------
 
 // MAGIC %md
-// MAGIC #### Mount Azure Blob Storage into Databricks
+// MAGIC #### Mount Azure Blob Storage (secured by keys) into Databricks
 // MAGIC This will create a local /mnt/mountname which will be accessible to all clusters and notebooks
 
 // COMMAND ----------
@@ -95,7 +95,7 @@ display(cdrDF)
 
 // COMMAND ----------
 
-val biggerDF = sqlContext.read.schema(cdrSchema).json("/mnt/towerdata/2018/08/20/*/*.json")
+val biggerDF = sqlContext.read.schema(cdrSchema).json("/mnt/towerdata/2018/08/25/*/*.json")
 
 // COMMAND ----------
 
